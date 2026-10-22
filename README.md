@@ -2,37 +2,56 @@
 
 Material da oficina **"Clean Architecture em Apps Mobile com Flutter: como tratar o feature overload com camadas, segurança e testes"** (SEMPESq 2026).
 
-O app é o **Rotina+**: login falso, clima do dia e lista de tarefas. Ele existe em duas versões com o mesmo comportamento:
+O app é o **Rotina+**: login falso, clima do dia e lista de tarefas. Na oficina ele roda no navegador (Chrome); você só precisa do Flutter e do Chrome.
+
+## Comece por aqui
+
+A prática acontece nas branches. Clone e vá direto para a primeira etapa:
+
+```bash
+git clone https://github.com/stheffanysantos/oficina-flutter-overload
+cd oficina-flutter-overload
+git switch etapa-0-bagunca
+flutter pub get
+flutter run -d chrome
+```
+
+Para chegar com tudo pronto (e não depender da internet no dia), baixe os pacotes de todas as etapas:
+
+```bash
+for b in etapa-0-bagunca etapa-1-camadas etapa-2-seguranca etapa-3-testes; do git switch $b && flutter pub get; done
+git switch etapa-0-bagunca
+```
+
+## As etapas
+
+Cada branch é um ponto completo do mesmo app, com o projeto na raiz. Se você se perder, troque de branch e continue.
+
+| Branch | Conteúdo | Como rodar |
+|---|---|---|
+| `etapa-0-bagunca` | O app em um único `main.dart` (feature overload) | `flutter run -d chrome` |
+| `etapa-1-camadas` | Separação em `domain`, `data` e `presentation`, por feature | `flutter run -d chrome` |
+| `etapa-2-seguranca` | Armazenamento seguro, chave fora do código, validação de entrada e logs limpos | `flutter run -d chrome --dart-define=API_KEY=minha_chave` |
+| `etapa-3-testes` | Testes de caso de uso, ViewModel, modelo e widget | `flutter test` |
+
+Para trocar de etapa:
+
+```bash
+# 1. aperte q no terminal onde o app está rodando
+git restore .                 # desfaz as alterações da tarefa (apaga sem perguntar)
+git switch etapa-1-camadas    # troca de etapa
+flutter pub get               # cada etapa tem seus pacotes
+flutter run -d chrome
+```
+
+## Esta branch (`main`)
+
+Guarda as duas versões completas lado a lado, para consulta:
 
 | Pasta | O que é |
 |---|---|
 | `rotina_bagunca/` | Tudo em um único arquivo (feature overload) |
 | `rotina_limpo/` | Clean Architecture, segurança e testes |
-
-## Branches da prática
-
-Cada branch é um ponto de partida completo e independente (o app fica na raiz). Se você se perder durante a prática, troque de branch e continue.
-
-| Branch | Conteúdo |
-|---|---|
-| `etapa-0-bagunca` | Ponto de partida: o app em um único `main.dart` |
-| `etapa-1-camadas` | Separação em `domain`, `data` e `presentation`, por feature |
-| `etapa-2-seguranca` | Armazenamento seguro, chave fora do código, validação de entrada e logs limpos |
-| `etapa-3-testes` | Testes unitários, de ViewModel e de widget (igual ao `rotina_limpo/`) |
-
-Os commits de cada branch seguem a ordem da prática. Use `git log --oneline` para ver os passos.
-
-```bash
-git clone <url-do-repositorio>
-cd <pasta>
-git switch etapa-0-bagunca
-flutter create . --project-name rotina_bagunca --platforms=android,ios
-rm test/widget_test.dart
-flutter pub get
-flutter run
-```
-
-> Nas branches `etapa-1` e `etapa-2`, use `--project-name rotina_limpo`, apague o `test/widget_test.dart` gerado pelo `flutter create` e rode com `--dart-define=API_KEY=chave_de_demonstracao` a partir da etapa 2.
 
 ## Senha de demonstração
 Qualquer e-mail válido com a senha `123456`.
