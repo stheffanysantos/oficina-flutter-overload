@@ -1,5 +1,5 @@
 name: rotina
-description: Rotina+ com feature overload (projeto da oficina SEMPESq 2026).
+description: Rotina+ com Clean Architecture (projeto da oficina SEMPESq 2026).
 publish_to: "none"
 version: 1.0.0+1
 
@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.2
+  provider: ^6.1.2
+  get_it: ^7.7.0
   shared_preferences: ^2.3.2
 
 dev_dependencies:

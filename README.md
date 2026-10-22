@@ -4,15 +4,26 @@ Material da oficina **"Clean Architecture em Apps Mobile com Flutter: como trata
 
 O app é o **Rotina+**: login falso, clima do dia e lista de tarefas. Na oficina ele roda no navegador (Chrome).
 
-## Você está na `etapa-0-bagunca`
+## Você está na `etapa-1-camadas`
 
-O ponto de partida: o app inteiro em um único `lib/main.dart` (447 linhas, três telas e nenhuma separação). Ele funciona, mas tem **feature overload**:
+O mesmo app, com o mesmo comportamento, separado em camadas e organizado por feature. Nenhuma regra nova: cada trecho do antigo `main.dart` foi para a sua casa.
 
-- a tela chama a internet, aplica regra de negócio e desenha, tudo junto;
-- a regra de ordenar as tarefas aparece copiada em três lugares;
-- o token fica em texto puro no `SharedPreferences` e aparece no log;
-- a chave de API está escrita no código;
-- não há como testar uma regra sem subir a tela e a rede.
+```
+lib/
+  main.dart           só liga a injeção de dependência e o app
+  app.dart            AuthGate: decide entre login e home
+  core/               di.dart (get_it) e failure.dart
+  features/
+    auth/ tasks/ weather/
+      domain/         entities, repositories (interface), usecases
+      data/           models, datasources, repositories (implementação)
+      presentation/   view_model, pages, widgets
+    home/             só junta clima e tarefas na tela
+```
+
+Regra de dependência: `presentation` e `data` conhecem o `domain`; o `domain` não conhece Flutter, http nem armazenamento.
+
+**De propósito, os problemas de segurança continuam aqui** (só mudaram de lugar): o token em `SharedPreferences`, a chave `ABC123-SECRETA` no `task_remote_datasource.dart`, os `print` com token e senha e a validação fraca. Eles são corrigidos na `etapa-2-seguranca`.
 
 ```bash
 flutter pub get
