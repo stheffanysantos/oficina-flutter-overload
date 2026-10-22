@@ -4,23 +4,26 @@ Material da oficina **"Clean Architecture em Apps Mobile com Flutter: como trata
 
 O app é o **Rotina+**: login falso, clima do dia e lista de tarefas. Na oficina ele roda no navegador (Chrome).
 
-## Você está na `etapa-2-seguranca`
+## Você está na `etapa-3-testes`
 
-As mesmas camadas da etapa 1, agora com quatro correções de segurança (OWASP Mobile Top 10). Cada uma mexe em poucos arquivos, graças às camadas:
+O código de `lib/` é o mesmo da etapa 2. Esta etapa só acrescenta a pasta `test/`: como o domain não depende de Flutter nem de rede, as regras são testadas em segundos, sem emulador e sem internet.
 
-| Risco | Correção | Onde |
-|---|---|---|
-| M9 Armazenamento inseguro | `SharedPreferences` trocado por `flutter_secure_storage` | `auth/data/datasources/auth_local_datasource.dart` e `core/di.dart` |
-| M1 Credenciais no código | A chave sai do código e entra por `--dart-define` | `core/env.dart` e `tasks/data/datasources/task_remote_datasource.dart` |
-| M4 Validação de entrada | E-mail com expressão regular, senha com 6 caracteres, título com até 80 | `auth/domain/usecases/login.dart` e `tasks/domain/usecases/add_task.dart` |
-| M5 e logs | `Uri.https` e nenhum `print` com token ou senha | datasources e `auth/data/repositories/auth_repository_impl.dart` |
-
-Atenção: o `--dart-define` tira a chave do repositório, mas não do app compilado. Segredo de verdade fica no servidor. E, na web, o armazenamento seguro protege menos que o Keychain e o Keystore dos celulares.
+| Arquivo | O que testa |
+|---|---|
+| `test/fakes.dart` | Repositórios falsos de tarefas e autenticação |
+| `test/features/tasks/get_tasks_test.dart` | Pendentes aparecem antes das concluídas |
+| `test/features/tasks/add_task_test.dart` | Título vazio e título grande são recusados |
+| `test/features/tasks/tasks_view_model_test.dart` | Estados do ViewModel: sucesso, erro, adicionar e alternar |
+| `test/features/auth/login_test.dart` | E-mail inválido e senha curta são recusados |
+| `test/features/weather/weather_model_test.dart` | Código do tempo vira o texto certo |
+| `test/widget_test.dart` | Tela de login mostra o erro de validação |
 
 ```bash
 flutter pub get
-flutter run -d chrome --dart-define=API_KEY=minha_chave
+flutter test
 ```
+
+Experimente quebrar a regra: em `lib/features/tasks/domain/usecases/get_tasks.dart`, troque para `[...done, ...pending]` e rode `flutter test` de novo. Depois desfaça com `git restore lib`.
 
 ## As etapas
 
