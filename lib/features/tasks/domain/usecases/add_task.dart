@@ -7,16 +7,16 @@ class AddTask {
 
   final TaskRepository _repository;
 
-  static const maxTitleLength = 200;
+  static const maxTitleLength = 80;
 
-  /// A mesma validação que estava na tela (ajustada na etapa 2).
+  /// Valida a entrada (OWASP M4) antes de chegar à camada de dados.
   Future<Task> call(String title) async {
     final clean = title.trim();
     if (clean.isEmpty) {
       throw const Failure('Digite um título para a tarefa');
     }
     if (clean.length > maxTitleLength) {
-      throw const Failure('Título muito grande');
+      throw const Failure('O título deve ter no máximo 80 caracteres');
     }
     return _repository.addTask(clean);
   }

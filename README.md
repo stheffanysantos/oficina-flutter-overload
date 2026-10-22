@@ -4,30 +4,22 @@ Material da oficina **"Clean Architecture em Apps Mobile com Flutter: como trata
 
 O app é o **Rotina+**: login falso, clima do dia e lista de tarefas. Na oficina ele roda no navegador (Chrome).
 
-## Você está na `etapa-1-camadas`
+## Você está na `etapa-2-seguranca`
 
-O mesmo app, com o mesmo comportamento, separado em camadas e organizado por feature. Nenhuma regra nova: cada trecho do antigo `main.dart` foi para a sua casa.
+As mesmas camadas da etapa 1, agora com quatro correções de segurança (OWASP Mobile Top 10). Cada uma mexe em poucos arquivos, graças às camadas:
 
-```
-lib/
-  main.dart           só liga a injeção de dependência e o app
-  app.dart            AuthGate: decide entre login e home
-  core/               di.dart (get_it) e failure.dart
-  features/
-    auth/ tasks/ weather/
-      domain/         entities, repositories (interface), usecases
-      data/           models, datasources, repositories (implementação)
-      presentation/   view_model, pages, widgets
-    home/             só junta clima e tarefas na tela
-```
+| Risco | Correção | Onde |
+|---|---|---|
+| M9 Armazenamento inseguro | `SharedPreferences` trocado por `flutter_secure_storage` | `auth/data/datasources/auth_local_datasource.dart` e `core/di.dart` |
+| M1 Credenciais no código | A chave sai do código e entra por `--dart-define` | `core/env.dart` e `tasks/data/datasources/task_remote_datasource.dart` |
+| M4 Validação de entrada | E-mail com expressão regular, senha com 6 caracteres, título com até 80 | `auth/domain/usecases/login.dart` e `tasks/domain/usecases/add_task.dart` |
+| M5 e logs | `Uri.https` e nenhum `print` com token ou senha | datasources e `auth/data/repositories/auth_repository_impl.dart` |
 
-Regra de dependência: `presentation` e `data` conhecem o `domain`; o `domain` não conhece Flutter, http nem armazenamento.
-
-**De propósito, os problemas de segurança continuam aqui** (só mudaram de lugar): o token em `SharedPreferences`, a chave `ABC123-SECRETA` no `task_remote_datasource.dart`, os `print` com token e senha e a validação fraca. Eles são corrigidos na `etapa-2-seguranca`.
+Atenção: o `--dart-define` tira a chave do repositório, mas não do app compilado. Segredo de verdade fica no servidor. E, na web, o armazenamento seguro protege menos que o Keychain e o Keystore dos celulares.
 
 ```bash
 flutter pub get
-flutter run -d chrome
+flutter run -d chrome --dart-define=API_KEY=minha_chave
 ```
 
 ## As etapas

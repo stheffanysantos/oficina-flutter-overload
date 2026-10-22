@@ -7,11 +7,17 @@ class Login {
 
   final AuthRepository _repository;
 
-  /// A mesma validação que estava na tela de login (reforçada na etapa 2).
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  /// Valida a entrada (OWASP M4) antes de chamar o repositório.
   Future<AppUser> call(String email, String password) async {
-    if (!email.contains('@')) {
+    final cleanEmail = email.trim();
+    if (!_emailRegex.hasMatch(cleanEmail)) {
       throw const Failure('Informe um e-mail válido');
     }
-    return _repository.login(email, password);
+    if (password.length < 6) {
+      throw const Failure('A senha deve ter ao menos 6 caracteres');
+    }
+    return _repository.login(cleanEmail, password);
   }
 }

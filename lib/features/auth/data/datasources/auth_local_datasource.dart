@@ -1,26 +1,29 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Guarda a sessão no aparelho.
-/// É o mesmo código que estava no main.dart: ainda em texto puro (corrigido na etapa 2).
+/// Guarda a sessão no armazenamento seguro do aparelho
+/// (Keychain no iOS, Keystore no Android) e não em texto puro (OWASP M9).
+/// Na web não existe cofre do sistema: o pacote criptografa o valor e o guarda
+/// no próprio navegador, o que protege menos. Em produção, sessão web costuma
+/// ficar em cookie HttpOnly definido pelo servidor.
 class AuthLocalDataSource {
+  AuthLocalDataSource(this._storage);
+
+  final FlutterSecureStorage _storage;
+
+  static const _tokenKey = 'auth_token';
+  static const _emailKey = 'auth_email';
+
   Future<void> save({required String token, required String email}) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-    await prefs.setString('email', email);
+    await _storage.write(key: _tokenKey, value: token);
+    await _storage.write(key: _emailKey, value: email);
   }
 
-  Future<String?> readToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
-  }
+  Future<String?> readToken() => _storage.read(key: _tokenKey);
 
-  Future<String?> readEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('email');
-  }
+  Future<String?> readEmail() => _storage.read(key: _emailKey);
 
   Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _emailKey);
   }
 }

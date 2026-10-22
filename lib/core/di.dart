@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:rotina/features/auth/data/datasources/auth_local_datasource.dart';
@@ -27,13 +28,16 @@ final sl = GetIt.instance;
 void setupDi() {
   // Externos
   sl.registerLazySingleton<http.Client>(() => http.Client());
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
 
   // Auth
   sl.registerLazySingleton<FakeAuthRemoteDataSource>(
     () => FakeAuthRemoteDataSource(),
   );
   sl.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSource(),
+    () => AuthLocalDataSource(sl<FlutterSecureStorage>()),
   );
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(

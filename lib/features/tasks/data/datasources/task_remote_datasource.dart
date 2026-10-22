@@ -1,7 +1,7 @@
-// ignore_for_file: avoid_print
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:rotina/core/env.dart';
 import 'package:rotina/core/failure.dart';
 import 'package:rotina/features/tasks/data/models/task_model.dart';
 
@@ -12,11 +12,10 @@ class TaskRemoteDataSource {
 
   Future<List<TaskModel>> fetchTasks() async {
     final response = await _client.get(
+      // HTTPS, e a chave vem de fora do código (OWASP M1 e M5).
       Uri.https('jsonplaceholder.typicode.com', '/todos', {'_limit': '8'}),
-      // A chave continua escrita no código (corrigido na etapa 2).
-      headers: {'x-api-key': 'ABC123-SECRETA'},
+      headers: {if (Env.apiKey.isNotEmpty) 'x-api-key': Env.apiKey},
     );
-    print('GET /todos -> ${response.statusCode}');
     if (response.statusCode != 200) {
       throw Failure('Erro ao buscar tarefas (${response.statusCode})');
     }
